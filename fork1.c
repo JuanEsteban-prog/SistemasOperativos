@@ -59,6 +59,7 @@ int main(){
         }else if(pid1 > 0){
             printf("Hola, soy el proceso padre con PID %d. Mi hijo tiene PID %d\n", getpid(), (int)pid1);
             wait(NULL);->Hace que el padre espere al hijo.
+            //Cuando hay más de un proceso se tiene que hacer lo siguiente: while(wate(NULL)>0);
             puts("Ahora sí, el hijo ha acabadoy ya puedo morir en paz");
         }else{
             perror("ha ocurrido un error al crear el proceso");
