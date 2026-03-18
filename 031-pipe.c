@@ -23,7 +23,7 @@ int main(){
     if(hijo > 0){//Padre
         close(tuberia[0]);
         printf("[PADRE] escribiendo en el pipe....");
-        write(tuberia[1], mensaje, sizeof(mensaje));
+        write(tuberia[1], mensaje, sizeof(mensaje));//De esta forma escribimos en el sistema write(donde voy a escribir, que voy a escribir, el tamaño de donde voy a escribir)
         close(tuberia[1]);
         wait(NULL);
         puts("El hijo ha finalizado, termino mi ejecución \n");
