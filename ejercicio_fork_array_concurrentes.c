@@ -22,7 +22,7 @@ El Padre debe inspeccionar el estado de salida de cada hijo utilizando las macro
 
 int main() {
     int numeros[10] = {15, 42, 7, 89, 23, 10, 55, 99, 4, 31};
-    int objetivo = 55; s
+    int objetivo = 55; 
 
     pid_t pid1, pid2;
 
