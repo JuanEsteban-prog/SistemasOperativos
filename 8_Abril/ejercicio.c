@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/wait.h> // Mejor usar <sys/wait.h> en lugar de <wait.h>
+#include <sys/wait.h> 
 #include <stdlib.h>
 #include <sys/mman.h>
 
