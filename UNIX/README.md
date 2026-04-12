@@ -34,3 +34,6 @@ mv ~/Downloads/"libro de inglés.pdf" ~/Documents/prueba/
 - `cal`: Muestra un calendario por pantalla.
 - `bc`: Abre una calculadora de la línea de comandos.
 - `du`: Nos dice cuanto espacio exacto está ocupando un archivo o carpeta específica.
+- `df`: Informa sobre el espacio libre en el sistema.
+- `ps`: Lista los procesos o programas que se están ejecutando. Con -f obtenemos un listado completo y con -e vemos los procesos de todos los usuarios, -l genera un listado largo.
+-
