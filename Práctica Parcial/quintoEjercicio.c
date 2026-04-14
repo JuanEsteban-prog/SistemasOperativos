@@ -61,7 +61,9 @@ int main()
         int resultadoRecibido;
         wait(&resultadoRecibido);
 
-        printf("Soy el abuelo, y el valor final de mi linaje es: %d", resultadoRecibido);
+        int valorFinal = WEXITSTATUS(resultadoRecibido);
+
+        printf("Soy el abuelo, y el valor final de mi linaje es: %d", valorFinal);
     }
 
     return 0;
