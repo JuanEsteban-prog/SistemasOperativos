@@ -76,7 +76,7 @@ int main()
         printf("Escribe una palabra cualquiera: ");
         scanf("%s", palabraUsuario);
 
-        write(pipe1[1], palabraUsuario, streln(palabraUsuario) + 1);
+        write(pipe1[1], palabraUsuario, strlen(palabraUsuario) + 1);
 
         wait(NULL);
     }
