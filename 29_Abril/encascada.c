@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <sys/types.h>
+#include <semaphore.h>
 
-#define LIMITE 10 // Limite de la cantidad de hilos
+#define LIMITE 10
+
+pthread_barrier_t barrera;
+// Array de semáforos para controlar el turno de finalización
+sem_t semaforos[LIMITE];
+pthread_t array[LIMITE];
 
 void calcula()
 {
@@ -14,58 +18,70 @@ void calcula()
         ;
 }
 
-pthread_t array[LIMITE];
-int n = 1;
-
-// Implementación de la función que ejecuta cada hilo
 void *creaThread(void *arg)
 {
-    // Recuperamos el número del hilo enviado como argumento
     int numero_hilo = *(int *)arg;
-
-    // Obtenemos el ID real del hilo (pthread_t)
+    int indice = numero_hilo - 1; // Índice de 0 a 9
     pthread_t id_hilo = pthread_self();
 
-    // Mensaje de inicio (hacemos un cast a unsigned long long para evitar warnings al imprimir el ID)
-    printf("He nacido. Soy el hilo %d con ID %llu\n", numero_hilo, (unsigned long long)id_hilo);
+    // 1. EL NACIMIENTO
+    printf("He nacido. Soy el hilo %d con ID %lu\n", numero_hilo, (unsigned long)id_hilo);
 
-    // Llamamos a la función de retardo/trabajo
+    // 2. LA ESPERA (Barrera para que todos nazcan primero)
+    pthread_barrier_wait(&barrera);
+
+    // 3. EL TRABAJO
     calcula();
 
-    // Mensaje de finalización
-    printf("El hilo número %d con ID %llu acaba su ejecución.\n", numero_hilo, (unsigned long long)id_hilo);
+    // 4. CONTROL DE SALIDA EN ORDEN INVERSO (10 -> 1)
+    // El hilo 10 no espera a nadie, los demás esperan al anterior (i+1)
+    if (numero_hilo < LIMITE)
+    {
+        sem_wait(&semaforos[indice]);
+    }
 
-    // Liberamos la memoria del argumento que reservamos en el main
+    printf("El hilo número %d con ID %lu acaba su ejecución.\n", numero_hilo, (unsigned long)id_hilo);
+
+    // Al terminar, el hilo actual le da paso al siguiente en orden descendente
+    if (numero_hilo > 1)
+    {
+        sem_post(&semaforos[indice - 1]);
+    }
+
     free(arg);
-
     pthread_exit(NULL);
 }
 
 int main(void)
 {
+    pthread_barrier_init(&barrera, NULL, LIMITE);
 
-    // 1. Bucle para crear los hilos
+    // Inicializamos los semáforos en 0 (bloqueados)
     for (int i = 0; i < LIMITE; i++)
     {
-        // Reservamos memoria para pasar el número 'n' de forma segura a cada hilo
-        int *arg = malloc(sizeof(int));
-        *arg = n;
-        n++;
-
-        // Creamos el hilo y le pasamos el puntero con su número correspondiente
-        if (pthread_create(&array[i], NULL, creaThread, arg) != 0)
-        {
-            perror("Error al crear el hilo");
-            return 1;
-        }
+        sem_init(&semaforos[i], 0, 0);
     }
 
-    // 2. Bucle para esperar a que todos los hilos terminen
-    // Si no hacemos pthread_join, el main terminará y cerrará los hilos prematuramente
     for (int i = 0; i < LIMITE; i++)
+    {
+        int *arg = malloc(sizeof(int));
+        *arg = i + 1;
+        pthread_create(&array[i], NULL, creaThread, arg);
+        usleep(10000);
+    }
+
+    for (int i = LIMITE - 1; i >= 0; i--)
     {
         pthread_join(array[i], NULL);
     }
 
+    // Limpieza
+    pthread_barrier_destroy(&barrera);
+    for (int i = 0; i < LIMITE; i++)
+    {
+        sem_destroy(&semaforos[i]);
+    }
+
+    printf("EL ÚLTIMO HILO EN NACER FUE EL PRIMERO EN TERMINAR.\n");
     return 0;
 }
