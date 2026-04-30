@@ -20,3 +20,23 @@ Usar pthread_mutex_lock / pthread_mutex_unlock para proteger dato.
 Usar pause() en el consumidor como mecanismo de espera.
 El número de iteraciones configurable mediante #define.
 */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <time.h>
+
+#define N 5
+#define RETARDO_US 50000 // 50 ms: tiempo que eslpera el productor * para que el consumidor instale signal()
+
+static int dato = 0;
+static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+
+static pthread_t tid_consumidor;
+
+static volatile int hay_dato = 0;
+static volatile int fin = 0;
+
+// Siempre que hay señales compartidas se tiene que utilizar static volatile. Volatile nos ayuda a comprobat el valor real que tiene un dato en la memoria RAM en lugar de la memoria caché
