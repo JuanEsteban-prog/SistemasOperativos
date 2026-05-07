@@ -3,45 +3,47 @@
 #include <signal.h>
 #include <unistd.h>
 
-// Variable global para contar monedas
 static volatile sig_atomic_t monedas = 0;
 
-// Manejador de la señal SIGUSR1
 void manejador_moneda(int sig) {
-
     monedas++;
-
-    if (monedas < 3) {
-        write("\n¡Clinc! Moneda recibida. Llevas %d/3 monedas.\n", monedas);
-    }
-    else {
-        write("\n¡Perfecto! Ya tienes 3 monedas.\n");
-        write("Sirviendo café...\n");
-        write("Gracias por usar la máquina de café.\n");
-        exit(0);
-    }
 }
 
 int main() {
 
-    // Configurar el manejador para SIGUSR1
-    if (signal(SIGUSR1, manejador_moneda) == SIG_ERR) {
-        perror("Error al configurar signal");
-        return 1;
-    }
+    signal(SIGUSR1, manejador_moneda);
 
-    write("Máquina de café iniciada.\n");
-    write("Envía monedas usando señales SIGUSR1.\n\n");
+    printf("Máquina de café iniciada.\n");
+    printf("Envía monedas usando SIGUSR1.\n\n");
 
-    // Bucle principal
+    int monedas_mostradas = 0;
+
     while (1) {
 
-        write("Máquina encendida. Esperando monedas... (Mi PID es %d)\n", getpid());
+        printf("Máquina encendida. Esperando monedas... (PID: %d)\n",
+               getpid());
 
-        // Mostrar inmediatamente en pantalla
-        fflush(stdout);
+        // Detectar nuevas monedas
+        if (monedas != monedas_mostradas) {
 
-        // Esperar 3 segundos
+            monedas_mostradas = monedas;
+
+            if (monedas == 1 || monedas == 2) {
+
+                printf("¡Clinc! Moneda recibida. "
+                       "Llevas %d/3 monedas.\n",
+                       monedas);
+            }
+            else if (monedas >= 3) {
+
+                printf("¡Perfecto! Ya tienes 3 monedas.\n");
+                printf("Sirviendo café...\n");
+                printf("Gracias por usar la máquina de café.\n");
+
+                exit(0);
+            }
+        }
+
         sleep(3);
     }
 
