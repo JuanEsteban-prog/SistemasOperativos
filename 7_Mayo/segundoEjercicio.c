@@ -12,12 +12,12 @@ void manejador_moneda(int sig) {
     monedas++;
 
     if (monedas < 3) {
-        printf("\n¡Clinc! Moneda recibida. Llevas %d/3 monedas.\n", monedas);
+        write("\n¡Clinc! Moneda recibida. Llevas %d/3 monedas.\n", monedas);
     }
     else {
-        printf("\n¡Perfecto! Ya tienes 3 monedas.\n");
-        printf("Sirviendo café...\n");
-        printf("Gracias por usar la máquina de café.\n");
+        write("\n¡Perfecto! Ya tienes 3 monedas.\n");
+        write("Sirviendo café...\n");
+        write("Gracias por usar la máquina de café.\n");
         exit(0);
     }
 }
@@ -30,13 +30,13 @@ int main() {
         return 1;
     }
 
-    printf("Máquina de café iniciada.\n");
-    printf("Envía monedas usando señales SIGUSR1.\n\n");
+    write("Máquina de café iniciada.\n");
+    write("Envía monedas usando señales SIGUSR1.\n\n");
 
     // Bucle principal
     while (1) {
 
-        printf("Máquina encendida. Esperando monedas... (Mi PID es %d)\n", getpid());
+        write("Máquina encendida. Esperando monedas... (Mi PID es %d)\n", getpid());
 
         // Mostrar inmediatamente en pantalla
         fflush(stdout);
